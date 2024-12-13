@@ -1,0 +1,18 @@
+:root {
+  --background-color: #3e51b4;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+li {
+  list-style: none;
+}
+
+button {
+  cursor: pointer;
+}

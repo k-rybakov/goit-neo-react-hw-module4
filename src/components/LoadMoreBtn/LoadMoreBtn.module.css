@@ -1,0 +1,6 @@
+.load {
+  background-color: var(--background-color);
+  color: white;
+  padding: 5px 12px;
+  border: none;
+}
