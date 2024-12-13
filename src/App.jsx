@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import ImageGallery from "./components/ImageGallery/ImageGallery";
 import SearchBar from "./components/SearchBar/SearchBar";
@@ -12,30 +12,34 @@ function App() {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  const [lastSearch, setLastSearch] = useState("");
-  const [nextPage, setNextPage] = useState(1);
+  const [query, setQuery] = useState("");
+  const [page, setPage] = useState(1);
   const [loadMore, setLoadMore] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalImage, setModalImage] = useState("");
 
-  const handleSearch = async (query, page = 1) => {
-    try {
-      setLoading(true);
-      setError(false);
-      setLastSearch(query);
-      setNextPage(page + 1);
-      if (page === 1) {
-        setImages([]);
+  useEffect(() => {
+    const handleSearch = async () => {
+      try {
+        if (!query) {
+          return;
+        }
+        setLoading(true);
+        setError(false);
+        if (page === 1) {
+          setImages([]);
+        }
+        const data = await searchPhotos(query, page);
+        setLoadMore(data.results.length === DEFAULT_PER_PAGE);
+        setImages((prevImages) => [...prevImages, ...data.results]);
+      } catch (error) {
+        setError(true);
+      } finally {
+        setLoading(false);
       }
-      const data = await searchPhotos(query, page);
-      setLoadMore(data.results.length === DEFAULT_PER_PAGE);
-      setImages((prevImages) => [...prevImages, ...data.results]);
-    } catch (error) {
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+    handleSearch();
+  }, [query, page]);
 
   const openModal = (img) => {
     setModalImage(img);
@@ -44,11 +48,11 @@ function App() {
 
   const closeModal = () => setShowModal(false);
 
-  const handleLoadMore = () => handleSearch(lastSearch, nextPage);
+  const handleLoadMore = () => setPage(page + 1);
 
   return (
     <>
-      <SearchBar onSearch={handleSearch} />
+      <SearchBar onSearch={setQuery} />
       {error && <ErrorMessage />}
       {images.length > 0 && (
         <ImageGallery images={images} onModal={openModal} />
