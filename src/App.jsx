@@ -44,6 +44,8 @@ function App() {
 
   const closeModal = () => setShowModal(false);
 
+  const handleLoadMore = () => handleSearch(lastSearch, nextPage);
+
   return (
     <>
       <SearchBar onSearch={handleSearch} />
@@ -52,9 +54,7 @@ function App() {
         <ImageGallery images={images} onModal={openModal} />
       )}
       {loading && <Loader />}
-      {loadMore && (
-        <LoadMoreBtn query={lastSearch} page={nextPage} onLoad={handleSearch} />
-      )}
+      {loadMore && <LoadMoreBtn onLoad={handleLoadMore} />}
       <ImageModal src={modalImage} isOpen={showModal} onClose={closeModal} />
     </>
   );
